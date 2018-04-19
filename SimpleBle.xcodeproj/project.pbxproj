@@ -13,6 +13,8 @@
 		1F37991220883778000F8F49 /* SimpleBle.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1F37991020883778000F8F49 /* SimpleBle.xcdatamodeld */; };
 		1F37991420883778000F8F49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F37991320883778000F8F49 /* Assets.xcassets */; };
 		1F37991720883778000F8F49 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F37991520883778000F8F49 /* LaunchScreen.storyboard */; };
+		1F379920208838EE000F8F49 /* ScanTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F37991F208838EE000F8F49 /* ScanTableViewController.swift */; };
+		1F3799232088393E000F8F49 /* ScanDeviceDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3799222088393E000F8F49 /* ScanDeviceDataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		1F37991320883778000F8F49 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1F37991620883778000F8F49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1F37991820883778000F8F49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1F37991F208838EE000F8F49 /* ScanTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanTableViewController.swift; sourceTree = "<group>"; };
+		1F3799222088393E000F8F49 /* ScanDeviceDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanDeviceDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,8 +60,9 @@
 		1F37990820883778000F8F49 /* SimpleBle */ = {
 			isa = PBXGroup;
 			children = (
+				1F3799212088391C000F8F49 /* DataSource */,
 				1F37990920883778000F8F49 /* AppDelegate.swift */,
-				1F37990B20883778000F8F49 /* ViewController.swift */,
+				1F37991E208838C2000F8F49 /* storyboards */,
 				1F37990D20883778000F8F49 /* Main.storyboard */,
 				1F37991320883778000F8F49 /* Assets.xcassets */,
 				1F37991520883778000F8F49 /* LaunchScreen.storyboard */,
@@ -65,6 +70,23 @@
 				1F37991020883778000F8F49 /* SimpleBle.xcdatamodeld */,
 			);
 			path = SimpleBle;
+			sourceTree = "<group>";
+		};
+		1F37991E208838C2000F8F49 /* storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				1F37991F208838EE000F8F49 /* ScanTableViewController.swift */,
+				1F37990B20883778000F8F49 /* ViewController.swift */,
+			);
+			path = storyboards;
+			sourceTree = "<group>";
+		};
+		1F3799212088391C000F8F49 /* DataSource */ = {
+			isa = PBXGroup;
+			children = (
+				1F3799222088393E000F8F49 /* ScanDeviceDataSource.swift */,
+			);
+			path = DataSource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,7 +161,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F379920208838EE000F8F49 /* ScanTableViewController.swift in Sources */,
 				1F37991220883778000F8F49 /* SimpleBle.xcdatamodeld in Sources */,
+				1F3799232088393E000F8F49 /* ScanDeviceDataSource.swift in Sources */,
 				1F37990C20883778000F8F49 /* ViewController.swift in Sources */,
 				1F37990A20883778000F8F49 /* AppDelegate.swift in Sources */,
 			);

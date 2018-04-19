@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreBluetooth
 
 class ViewController: UIViewController {
 
@@ -20,6 +21,16 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
+    @IBAction func onClickPeripheral(_ sender: Any) {
+        
+    }
+    
+    @IBAction func backToTop(segue: UIStoryboardSegue,sender:Any?) {
+        if let controller = segue.source as? ScanTableViewController {
+            print("controller.retValue:\(controller.retValue)")
+            
+        }
+    }
+    
 }
 

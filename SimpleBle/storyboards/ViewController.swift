@@ -26,7 +26,8 @@ class ViewController: UIViewController {
 
     @IBAction func onClickPeripheral(_ sender: Any) {
         //電波だす
-        if peripheralManager.isAdvertising {
+        if !peripheralManager.isAdvertising {
+            print("電波だす")
             let uuid = CBUUID(string: SERVICE_UUID)
             
             let option:[String : Any] = [
@@ -34,6 +35,7 @@ class ViewController: UIViewController {
             ]
             peripheralManager.startAdvertising(option)
         } else {
+            print("電波ださない")
             peripheralManager.stopAdvertising()
         }
         

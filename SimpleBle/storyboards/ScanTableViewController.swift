@@ -7,15 +7,13 @@
 //
 
 import UIKit
+import CoreBluetooth
 
-protocol ScanTableViewControllerDelegate : class {
-    
-}
 class ScanTableViewController: UITableViewController {
     
     let dataSource:UITableViewDataSource! = ScanDeviceDataSource()
     
-    var retValue:Any?
+    var peripheral:CBPeripheral?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +43,6 @@ class ScanTableViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        retValue = "aaaa"
         performSegue(withIdentifier: "backToTop", sender: self)
     }
 

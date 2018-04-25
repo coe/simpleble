@@ -8,15 +8,52 @@
 
 import UIKit
 import CoreData
+import CoreBluetooth
+
+let SERVICE_UUID = "D096F3C2-5148-410A-BA6A-20FEAD00D7CA"
+let IMAGE_WRITE_CHARACTERISTIC_UUID = "42184378-A26D-474B-82CA-43C03AA7A701"
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,CBPeripheralManagerDelegate {
+    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
+        switch peripheral.state {
+        case .poweredOn:
+            break
+        default:
+            break
+        }
+    }
+    
+    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest])
+    {
+        requests.forEach { (request) in
+            let value = request.value
+            print("value:\(value)")
+            peripheral.respond(to: request, withResult: .success)
+        }
+    }
 
     var window: UIWindow?
-
+    
+    var centralManager:CBCentralManager!
+    var peripheralManager:CBPeripheralManager!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        centralManager = CBCentralManager(delegate: self, queue: nil)
+        peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
+        let uuid = CBUUID(string: SERVICE_UUID)
+        let service:CBMutableService = CBMutableService(type: uuid, primary: true)
+        var characteristicsArray:[CBCharacteristic] = []
+        let characteristicUuid = CBUUID(string: IMAGE_WRITE_CHARACTERISTIC_UUID)
+        characteristicsArray.append(CBMutableCharacteristic(type: characteristicUuid, properties: .write, value: nil, permissions: .writeable))
+        service.characteristics = characteristicsArray
+        peripheralManager.add(service)
+        
+        if let viewcontroller = self.window?.rootViewController as? ViewController {
+            viewcontroller.centralManager = centralManager
+            viewcontroller.peripheralManager = peripheralManager
+        }
         return true
     }
 
@@ -73,7 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return container
     }()
 
-    // MARK: - Core Data Saving support
+    // MARK: - CBCentralManagerDelegate
 
     func saveContext () {
         let context = persistentContainer.viewContext
@@ -86,6 +123,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
+        }
+    }
+    
+    // MARK: - Core Data stack
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        switch central.state {
+        case .poweredOn:
+            let uuid:CBUUID = CBUUID(string: "D096F3C2-5148-410A-BA6A-20FEAD00D7CA")
+            centralManager.scanForPeripherals(withServices: [uuid], options: nil)
+            break
+            
+        case .unknown:
+            break
+        case .resetting:
+            break
+        case .unsupported:
+            break
+        case .unauthorized:
+            break
+        case .poweredOff:
+            break
         }
     }
 

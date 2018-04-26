@@ -18,6 +18,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         switch peripheral.state {
         case .poweredOn:
+            //サービス、キャラクタリスティック追加はpoweredOnの後
+            let uuid = CBUUID(string: SERVICE_UUID)
+            let service:CBMutableService = CBMutableService(type: uuid, primary: true)
+            var characteristicsArray:[CBCharacteristic] = []
+            let characteristicUuid = CBUUID(string: IMAGE_WRITE_CHARACTERISTIC_UUID)
+            characteristicsArray.append(CBMutableCharacteristic(type: characteristicUuid, properties: .write, value: nil, permissions: .writeable))
+            service.characteristics = characteristicsArray
+            peripheralManager.add(service)
             break
         default:
             break
@@ -26,6 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
     
     func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest])
     {
+        print("didReceiveWrite")
         requests.forEach { (request) in
             let value = request.value
             print("value:\(value)")
@@ -42,13 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
         // Override point for customization after application launch.
         centralManager = CBCentralManager(delegate: self, queue: nil)
         peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
-        let uuid = CBUUID(string: SERVICE_UUID)
-        let service:CBMutableService = CBMutableService(type: uuid, primary: true)
-        var characteristicsArray:[CBCharacteristic] = []
-        let characteristicUuid = CBUUID(string: IMAGE_WRITE_CHARACTERISTIC_UUID)
-        characteristicsArray.append(CBMutableCharacteristic(type: characteristicUuid, properties: .write, value: nil, permissions: .writeable))
-        service.characteristics = characteristicsArray
-        peripheralManager.add(service)
+        
         
         if let viewcontroller = self.window?.rootViewController as? ViewController {
             viewcontroller.centralManager = centralManager
@@ -130,7 +133,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            let uuid:CBUUID = CBUUID(string: "D096F3C2-5148-410A-BA6A-20FEAD00D7CA")
+            let uuid:CBUUID = CBUUID(string: SERVICE_UUID)
             centralManager.scanForPeripherals(withServices: [uuid], options: nil)
             break
             

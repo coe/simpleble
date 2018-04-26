@@ -31,7 +31,8 @@ class ViewController: UIViewController {
             let uuid = CBUUID(string: SERVICE_UUID)
             
             let option:[String : Any] = [
-                CBAdvertisementDataServiceUUIDsKey:[uuid]
+                CBAdvertisementDataServiceUUIDsKey:[uuid],
+                CBAdvertisementDataLocalNameKey:"na"
             ]
             peripheralManager.startAdvertising(option)
         } else {

@@ -15,7 +15,7 @@ class ScanDeviceDataSource: NSObject,UITableViewDataSource,CBCentralManagerDeleg
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            let uuid:CBUUID = CBUUID(string: "D096F3C2-5148-410A-BA6A-20FEAD00D7CA")
+            let uuid:CBUUID = CBUUID(string: SERVICE_UUID)
             manager.scanForPeripherals(withServices: [uuid], options: nil)
             
             break

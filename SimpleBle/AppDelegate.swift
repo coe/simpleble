@@ -15,6 +15,7 @@ let IMAGE_WRITE_CHARACTERISTIC_UUID = "42184378-A26D-474B-82CA-43C03AA7A701"
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,CBPeripheralManagerDelegate {
+    // MARK: - CBPeripheralManagerDelegate
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         switch peripheral.state {
         case .poweredOn:
@@ -23,6 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
             let service:CBMutableService = CBMutableService(type: uuid, primary: true)
             var characteristicsArray:[CBCharacteristic] = []
             let characteristicUuid = CBUUID(string: IMAGE_WRITE_CHARACTERISTIC_UUID)
+            let characteristic = CBMutableCharacteristic(type: characteristicUuid, properties: .write, value: nil, permissions: .writeable)
             characteristicsArray.append(CBMutableCharacteristic(type: characteristicUuid, properties: .write, value: nil, permissions: .writeable))
             service.characteristics = characteristicsArray
             peripheralManager.add(service)
@@ -129,7 +131,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
         }
     }
     
-    // MARK: - Core Data stack
+    // MARK: - CBCentralManagerDelegate
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:

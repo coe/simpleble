@@ -15,6 +15,45 @@ let IMAGE_WRITE_CHARACTERISTIC_UUID = "42184378-A26D-474B-82CA-43C03AA7A701"
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,CBPeripheralManagerDelegate {
+    
+    // MARK: - CBCentralManagerDelegate
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        switch central.state {
+        case .poweredOn:
+            let uuid:CBUUID = CBUUID(string: SERVICE_UUID)
+            centralManager.scanForPeripherals(withServices: [uuid], options: nil)
+            break
+            
+        case .unknown:
+            break
+        case .resetting:
+            break
+        case .unsupported:
+            break
+        case .unauthorized:
+            break
+        case .poweredOff:
+            break
+        }
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        print(#file,#function,#line)
+    }
+    
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print(#file,#function,#line)
+        
+    }
+    
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?){
+        print(#file,#function,#line)
+    }
+
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?){
+        print(#file,#function,#line)
+    }
+    
     // MARK: - CBPeripheralManagerDelegate
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         switch peripheral.state {
@@ -25,7 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
             var characteristicsArray:[CBCharacteristic] = []
             let characteristicUuid = CBUUID(string: IMAGE_WRITE_CHARACTERISTIC_UUID)
             let characteristic = CBMutableCharacteristic(type: characteristicUuid, properties: .write, value: nil, permissions: .writeable)
-            characteristicsArray.append(CBMutableCharacteristic(type: characteristicUuid, properties: .write, value: nil, permissions: .writeable))
+            characteristicsArray.append(characteristic)
             service.characteristics = characteristicsArray
             peripheralManager.add(service)
             break
@@ -55,9 +94,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
         peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
         
         
-        if let viewcontroller = self.window?.rootViewController as? ViewController {
+        if let nav = self.window?.rootViewController as? UINavigationController,let viewcontroller = nav.topViewController as? ConnectedPeripheralTableViewController {
             viewcontroller.centralManager = centralManager
             viewcontroller.peripheralManager = peripheralManager
+            viewcontroller.managedObjectContext = self.persistentContainer.viewContext
+            viewcontroller.appDelegate = self
         }
         return true
     }
@@ -96,8 +137,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
          error conditions that could cause the creation of the store to fail.
         */
         let container = NSPersistentContainer(name: "SimpleBle")
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        container.persistentStoreDescriptions = [description]
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
+
                 // Replace this implementation with code to handle the error appropriately.
                 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                  
@@ -115,8 +160,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
         return container
     }()
 
-    // MARK: - CBCentralManagerDelegate
-
     func saveContext () {
         let context = persistentContainer.viewContext
         if context.hasChanges {
@@ -130,27 +173,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
             }
         }
     }
-    
-    // MARK: - CBCentralManagerDelegate
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        switch central.state {
-        case .poweredOn:
-            let uuid:CBUUID = CBUUID(string: SERVICE_UUID)
-            centralManager.scanForPeripherals(withServices: [uuid], options: nil)
-            break
-            
-        case .unknown:
-            break
-        case .resetting:
-            break
-        case .unsupported:
-            break
-        case .unauthorized:
-            break
-        case .poweredOff:
-            break
-        }
-    }
+
 
 }
 

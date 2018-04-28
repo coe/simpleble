@@ -43,7 +43,7 @@ class ScanDeviceDataSource: NSObject,UITableViewDataSource,CBCentralManagerDeleg
     
     //MARK: - CBCentralManagerDelegate
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        peripheral
+        
     }
     
     //MARK: - UITableViewDataSource

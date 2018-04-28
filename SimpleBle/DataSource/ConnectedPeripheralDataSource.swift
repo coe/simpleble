@@ -17,7 +17,7 @@ class ConnectedPeripheralDataSource: NSObject {
         super.init()
 
         let request = NSFetchRequest<ConnectedPeripheral>(entityName: "ConnectedPeripheral")
-        let lastNameSort = NSSortDescriptor(key: "name", ascending: true)
+        let lastNameSort = NSSortDescriptor(key: "create_at", ascending: true)
         request.sortDescriptors = [lastNameSort]
 
         let fetchedResultsController = NSFetchedResultsController<ConnectedPeripheral>(fetchRequest: request, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)

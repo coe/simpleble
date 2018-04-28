@@ -53,8 +53,9 @@ class ConnectedPeripheralTableViewController: UITableViewController,NSFetchedRes
         let uuid = UUID()
         print("uuid:\(uuid.uuidString)")
 
-//        data.identifier = uuid
+        data.identifier = uuid
         data.name = "test"
+        data.create_at = Date()
         appDelegate.saveContext()
     }
     

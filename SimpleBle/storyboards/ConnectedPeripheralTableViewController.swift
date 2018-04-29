@@ -10,6 +10,11 @@ import UIKit
 import CoreData
 import CoreBluetooth
 
+
+/// 書き込みの流れ
+/// 1.長さを書き込む
+/// 2.writeレスポンス
+/// 3.データ書き込み
 class ConnectedPeripheralTableViewController: UITableViewController,NSFetchedResultsControllerDelegate {
     
     private var connectedPeripheralDataSource:ConnectedPeripheralDataSource!
@@ -24,6 +29,17 @@ class ConnectedPeripheralTableViewController: UITableViewController,NSFetchedRes
         super.viewDidLoad()
         connectedPeripheralDataSource = ConnectedPeripheralDataSource(managedObjectContext: managedObjectContext, delegate: self)
         //TODO:常に電波はだしておく
+        let uuid = CBUUID(string: SERVICE_UUID)
+        
+        let option:[String : Any] = [
+            CBAdvertisementDataServiceUUIDsKey:[uuid],
+            CBAdvertisementDataLocalNameKey:"na"
+        ]
+        peripheralManager.startAdvertising(option)
+    }
+    
+    deinit {
+        peripheralManager.stopAdvertising()
     }
 
     override func didReceiveMemoryWarning() {
@@ -46,6 +62,24 @@ class ConnectedPeripheralTableViewController: UITableViewController,NSFetchedRes
 
     }
     
+    var dataLength = 0
+    var dataBytes:Data? = nil
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let peripheral = connectedPeripheralDataSource.getPeripheral(cellForRowAt: indexPath)
+        peripheral.services?.forEach({ (service) in
+            service.characteristics?.forEach({ (characteristic) in
+                switch characteristic.uuid {
+                case CBUUID(string: BIGDATA_LENGTH_CHARACTERISTIC_UUID):
+                    
+                    break
+                default:
+                    break
+                }
+            })
+        })
+    }
+    
     // MARK : - IBAction
     @IBAction func onClickTest(_ sender: Any) {
         let entity = NSEntityDescription.entity(forEntityName: "ConnectedPeripheral", in: managedObjectContext)
@@ -61,6 +95,12 @@ class ConnectedPeripheralTableViewController: UITableViewController,NSFetchedRes
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?){
         tableView.reloadData()
+    }
+    
+    @IBAction func backToTop(segue: UIStoryboardSegue,sender:Any?) {
+        let scanTableViewController:ScanTableViewController = segue.source as! ScanTableViewController
+        appDelegate.connectPeripheral(scanData: scanTableViewController.selectedScannedPeripheral!)
+        
     }
     
 
@@ -99,14 +139,23 @@ class ConnectedPeripheralTableViewController: UITableViewController,NSFetchedRes
     }
     */
 
-    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        if let identifier = segue.identifier {
+            switch identifier {
+            case "showScan":
+                let viewController:ScanTableViewController = segue.destination as! ScanTableViewController
+                viewController.managedObjectContext = managedObjectContext
+                viewController.centralManager = centralManager
+                break
+            default:
+                break
+            }
+        }
     }
-    */
 
 }

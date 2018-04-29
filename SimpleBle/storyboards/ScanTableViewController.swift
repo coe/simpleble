@@ -7,22 +7,46 @@
 //
 
 import UIKit
+import CoreData
 import CoreBluetooth
 
-class ScanTableViewController: UITableViewController {
+/// スキャンの結果を表示する
+/// この画面が終了したらスキャンは消滅させる
+///
+class ScanTableViewController: UITableViewController,NSFetchedResultsControllerDelegate {
+
+    private var scanDeviceDataSource:ScanDeviceDataSource!
     
-    let dataSource:UITableViewDataSource! = ScanDeviceDataSource()
-    
-    var peripheral:CBPeripheral?
+    var centralManager:CBCentralManager!
+
+    private var _selectedScannedPeripheral:ScannedPeripheral?
+    var selectedScannedPeripheral:ScannedPeripheral? {
+        get {
+            return _selectedScannedPeripheral
+        }
+    }
+    var managedObjectContext:NSManagedObjectContext!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        scanDeviceDataSource = ScanDeviceDataSource(managedObjectContext: managedObjectContext, delegate: self)
+        let uuid = CBUUID(string: SERVICE_UUID)
+        centralManager.scanForPeripherals(withServices: [uuid], options: nil)
+    }
+    
+    deinit {
+        centralManager.stopScan()
+        let request = NSFetchRequest<NSManagedObject>(entityName: "ScannedPeripheral")
+        do {
+            let ret = try managedObjectContext.fetch(request)
+            ret.forEach { (movie) in
+                managedObjectContext.delete(movie)
+            }
+            try managedObjectContext.save()
+        } catch {
+            print(#file,#function,#line,"error:\(error)")
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -33,19 +57,23 @@ class ScanTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource.tableView(tableView,numberOfRowsInSection:section)
+        return scanDeviceDataSource.tableView(tableView,numberOfRowsInSection:section)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        return dataSource.tableView(tableView,cellForRowAt:indexPath)
+        return scanDeviceDataSource.tableView(tableView,cellForRowAt:indexPath)
     }
 
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "backToTop", sender: self)
+        let data = scanDeviceDataSource.fetchedResultsController.object(at: indexPath)
+        _selectedScannedPeripheral = data
+        performSegue(withIdentifier: "backToConnection", sender: self)
     }
 
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?){
+        tableView.reloadData()
+    }
 
     /*
     // Override to support conditional editing of the table view.
@@ -91,5 +119,7 @@ class ScanTableViewController: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    
 
 }

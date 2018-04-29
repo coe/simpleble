@@ -8,8 +8,11 @@
 
 import UIKit
 import CoreData
+import CoreBluetooth
 
 class ConnectedPeripheralDataSource: NSObject {
+    
+    var peripherals:[CBPeripheral] = []
     
     var fetchedResultsController: NSFetchedResultsController<ConnectedPeripheral>!
     
@@ -30,6 +33,10 @@ class ConnectedPeripheralDataSource: NSObject {
         
         self.fetchedResultsController = fetchedResultsController
         fetchedResultsController.delegate = delegate
+    }
+    
+    func getPeripheral(cellForRowAt indexPath: IndexPath) -> CBPeripheral {
+        return peripherals[indexPath.row]
     }
 }
 

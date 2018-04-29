@@ -5,12 +5,13 @@
         <attribute name="identifier" optional="YES" attributeType="UUID" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="Peripheral" representedClassName="Peripheral" syncable="YES" codeGenerationType="class">
+    <entity name="ScannedPeripheral" representedClassName="ScannedPeripheral" syncable="YES" codeGenerationType="class">
+        <attribute name="create_at" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="UUID" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
         <element name="ConnectedPeripheral" positionX="-63" positionY="0" width="128" height="90"/>
-        <element name="Peripheral" positionX="-63" positionY="-18" width="128" height="75"/>
+        <element name="ScannedPeripheral" positionX="-63" positionY="-18" width="128" height="90"/>
     </elements>
 </model>

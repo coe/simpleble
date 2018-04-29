@@ -8,53 +8,61 @@
 
 import UIKit
 import CoreBluetooth
+import CoreData
 
-class ScanDeviceDataSource: NSObject,UITableViewDataSource,CBCentralManagerDelegate {
+class ScanDeviceDataSource: NSObject {
     
-    var manager:CBCentralManager!
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        switch central.state {
-        case .poweredOn:
-            let uuid:CBUUID = CBUUID(string: SERVICE_UUID)
-            manager.scanForPeripherals(withServices: [uuid], options: nil)
-            
-            break
-            
-        case .unknown:
-            break
-        case .resetting:
-            break
-        case .unsupported:
-            break
-        case .unauthorized:
-            break
-        case .poweredOff:
-            break
+    var peripherals:[CBPeripheral] = []
+
+    var fetchedResultsController: NSFetchedResultsController<ScannedPeripheral>!
+    
+    init(managedObjectContext:NSManagedObjectContext,delegate:NSFetchedResultsControllerDelegate) {
+        super.init()
+        
+        let request = NSFetchRequest<ScannedPeripheral>(entityName: "ScannedPeripheral")
+        let lastNameSort = NSSortDescriptor(key: "create_at", ascending: true)
+        request.sortDescriptors = [lastNameSort]
+        
+        let fetchedResultsController = NSFetchedResultsController<ScannedPeripheral>(fetchRequest: request, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            fatalError("Failed to initialize FetchedResultsController: \(error)")
+        }
+        
+        self.fetchedResultsController = fetchedResultsController
+        fetchedResultsController.delegate = delegate
+    }
+    
+    func getPeripheral(cellForRowAt indexPath: IndexPath) -> CBPeripheral {
+        return peripherals[indexPath.row]
+    }
+}
+
+
+extension ScanDeviceDataSource : UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        if let count = fetchedResultsController.fetchedObjects?.count,count > 0 {
+            return 1
+        } else {
+            return 0
         }
     }
     
     
-    override init() {
-        super.init()
-        //スキャン
-        manager = CBCentralManager(delegate: self, queue: nil)
-        
-    }
     
-    //MARK: - CBCentralManagerDelegate
-    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        
-    }
-    
-    //MARK: - UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return fetchedResultsController.fetchedObjects?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = "aaaa"
-        cell.detailTextLabel?.text = "bbbb"
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ScanDeviceDataSourceCell", for: indexPath)
+        let data = fetchedResultsController.object(at: indexPath)
+        
+        cell.textLabel?.text = data.name
+        //        cell.detailTextLabel?.text = data.identifier?.uuidString
+        
         return cell
     }
     

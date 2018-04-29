@@ -41,14 +41,6 @@ class ViewController: UIViewController {
         }
         
     }
-    
-    @IBAction func backToTop(segue: UIStoryboardSegue,sender:Any?) {
-        if let controller = segue.source as? ScanTableViewController,
-            let peripheral = controller.peripheral
-        {
-            centralManager.connect(peripheral, options: nil)
-        }
-    }
-    
+
 }
 

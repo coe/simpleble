@@ -15,12 +15,14 @@ import CoreBluetooth
 ///
 class ScanTableViewController: UITableViewController,NSFetchedResultsControllerDelegate {
 
-    private var scanDeviceDataSource:ScanDeviceDataSource!
-    
+    var scanDataSource:ScanDataSource!
+
     var centralManager:CBCentralManager!
 
-    private var _selectedScannedPeripheral:ScannedPeripheral?
-    var selectedScannedPeripheral:ScannedPeripheral? {
+    var longDataServiceUuid:CBUUID!
+
+    private var _selectedScannedPeripheral:CBPeripheral?
+    var selectedScannedPeripheral:CBPeripheral? {
         get {
             return _selectedScannedPeripheral
         }
@@ -29,9 +31,7 @@ class ScanTableViewController: UITableViewController,NSFetchedResultsControllerD
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        scanDeviceDataSource = ScanDeviceDataSource(managedObjectContext: managedObjectContext, delegate: self)
-        let uuid = CBUUID(string: SERVICE_UUID)
-        centralManager.scanForPeripherals(withServices: [uuid], options: nil)
+        centralManager.scanForPeripherals(withServices: [longDataServiceUuid], options: nil)
     }
     
     deinit {
@@ -57,16 +57,16 @@ class ScanTableViewController: UITableViewController,NSFetchedResultsControllerD
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return scanDeviceDataSource.tableView(tableView,numberOfRowsInSection:section)
+        return scanDataSource.tableView(tableView,numberOfRowsInSection:section)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return scanDeviceDataSource.tableView(tableView,cellForRowAt:indexPath)
+        return scanDataSource.tableView(tableView,cellForRowAt:indexPath)
     }
 
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let data = scanDeviceDataSource.fetchedResultsController.object(at: indexPath)
+        let data = scanDataSource.getPeripheral(indexPath: indexPath)
         _selectedScannedPeripheral = data
         performSegue(withIdentifier: "backToConnection", sender: self)
     }

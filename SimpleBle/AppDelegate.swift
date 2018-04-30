@@ -8,148 +8,15 @@
 
 import UIKit
 import CoreData
-import CoreBluetooth
-
-let SERVICE_UUID = "D096F3C2-5148-410A-BA6A-20FEAD00D7CA"
-let BIGDATA_WRITE_CHARACTERISTIC_UUID = "42184378-A26D-474B-82CA-43C03AA7A701"
-let BIGDATA_LENGTH_CHARACTERISTIC_UUID = "62A9572E-3C99-4149-AFED-ED4C5CFD0242"
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,CBPeripheralManagerDelegate {
-    
-    var connectedPeripheral:[CBPeripheral] = []
-    var scannedPeripheral:[CBPeripheral] = []
-
-    // MARK: - CBCentralManagerDelegate
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        switch central.state {
-        case .poweredOn:
-            let uuid:CBUUID = CBUUID(string: SERVICE_UUID)
-            centralManager.scanForPeripherals(withServices: [uuid], options: nil)
-            break
-            
-        case .unknown:
-            break
-        case .resetting:
-            break
-        case .unsupported:
-            break
-        case .unauthorized:
-            break
-        case .poweredOff:
-            break
-        }
-    }
-    
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        print(#file,#function,#line)
-        let entity = NSEntityDescription.entity(forEntityName: "ScannedPeripheral", in: self.persistentContainer.viewContext)
-        let data = ScannedPeripheral(entity: entity!, insertInto: self.persistentContainer.viewContext)
-        data.identifier = peripheral.identifier
-        data.create_at = Date()
-        data.name = peripheral.name
-        saveContext()
-        scannedPeripheral.append(peripheral)
-    }
-    
-    func clearScan() throws {
-        let request = NSFetchRequest<NSManagedObject>(entityName: "ScannedPeripheral")
-        let ret = try self.persistentContainer.viewContext.fetch(request)
-        ret.forEach { (data) in
-            self.persistentContainer.viewContext.delete(data)
-        }
-        scannedPeripheral.removeAll()
-    }
-    
-    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print(#file,#function,#line)
-        let entity = NSEntityDescription.entity(forEntityName: "ConnectedPeripheral", in: self.persistentContainer.viewContext)
-        let data = ConnectedPeripheral(entity: entity!, insertInto: self.persistentContainer.viewContext)
-        data.identifier = peripheral.identifier
-        data.create_at = Date()
-        data.name = peripheral.name
-        saveContext()
-        connectedPeripheral.append(peripheral)
-        
-    }
-    
-    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?){
-        print(#file,#function,#line)
-    }
-
-    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?){
-        print(#file,#function,#line)
-        
-        connectedPeripheral = connectedPeripheral.filter { (tmpperipheral) -> Bool in
-            let ret = tmpperipheral.identifier != peripheral.identifier
-            if !ret {
-                let request = NSFetchRequest<ConnectedPeripheral>(entityName: "ConnectedPeripheral")
-                let lastNameSort = NSSortDescriptor(key: "create_at", ascending: true)
-                request.sortDescriptors = [lastNameSort]
-                request.predicate = NSPredicate(format: "user_id != %@", peripheral.identifier.uuidString)
-                do {
-                    let fetchRet = try self.persistentContainer.viewContext.fetch(request)
-                    fetchRet.forEach({ (data) in
-                        self.persistentContainer.viewContext.delete(data)
-                    })
-                    self.saveContext()
-                } catch {
-                    fatalError("\(error)")
-                }
-                
-
-            }
-            
-            return ret
-        }
-    }
-    
-    // MARK: - CBPeripheralManagerDelegate
-    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        switch peripheral.state {
-        case .poweredOn:
-            //サービス、キャラクタリスティック追加はpoweredOnの後
-            let uuid = CBUUID(string: SERVICE_UUID)
-            let service:CBMutableService = CBMutableService(type: uuid, primary: true)
-            var characteristicsArray:[CBCharacteristic] = []
-            let characteristicUuid = CBUUID(string: BIGDATA_WRITE_CHARACTERISTIC_UUID)
-            let characteristic = CBMutableCharacteristic(type: characteristicUuid, properties: .write, value: nil, permissions: .writeable)
-            characteristicsArray.append(characteristic)
-            service.characteristics = characteristicsArray
-            peripheralManager.add(service)
-            break
-        default:
-            break
-        }
-    }
-    
-    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest])
-    {
-        print("didReceiveWrite")
-        requests.forEach { (request) in
-            let value = request.value
-            print("value:\(value)")
-            peripheral.respond(to: request, withResult: .success)
-        }
-    }
+class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    
-    var centralManager:CBCentralManager!
-    var peripheralManager:CBPeripheralManager!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        centralManager = CBCentralManager(delegate: self, queue: nil)
-        peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
-        
-        
-        if let nav = self.window?.rootViewController as? UINavigationController,let viewcontroller = nav.topViewController as? ConnectedPeripheralTableViewController {
-            viewcontroller.centralManager = centralManager
-            viewcontroller.peripheralManager = peripheralManager
-            viewcontroller.managedObjectContext = self.persistentContainer.viewContext
-            viewcontroller.appDelegate = self
-        }
+
         return true
     }
 
@@ -177,14 +44,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate,CBCentralManagerDelegate,C
         self.saveContext()
     }
     
-    
-    func connectPeripheral(scanData:ScannedPeripheral) {
-        let peripheral = scannedPeripheral.first { (peripheral) -> Bool in
-            return scanData.identifier == peripheral.identifier
-        }
-        centralManager.connect(peripheral!, options: nil)
-    }
-
     // MARK: - Core Data stack
 
     lazy var persistentContainer: NSPersistentContainer = {

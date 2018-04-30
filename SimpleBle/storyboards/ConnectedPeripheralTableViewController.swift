@@ -99,7 +99,6 @@ class ConnectedPeripheralTableViewController: UITableViewController,NSFetchedRes
     
     @IBAction func backToTop(segue: UIStoryboardSegue,sender:Any?) {
         let scanTableViewController:ScanTableViewController = segue.source as! ScanTableViewController
-        appDelegate.connectPeripheral(scanData: scanTableViewController.selectedScannedPeripheral!)
         
     }
     

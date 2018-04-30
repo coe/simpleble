@@ -8,21 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		1F37990A20883778000F8F49 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F37990920883778000F8F49 /* AppDelegate.swift */; };
-		1F37990C20883778000F8F49 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F37990B20883778000F8F49 /* ViewController.swift */; };
 		1F37990F20883778000F8F49 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F37990D20883778000F8F49 /* Main.storyboard */; };
 		1F37991220883778000F8F49 /* SimpleBle.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1F37991020883778000F8F49 /* SimpleBle.xcdatamodeld */; };
 		1F37991420883778000F8F49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F37991320883778000F8F49 /* Assets.xcassets */; };
 		1F37991720883778000F8F49 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F37991520883778000F8F49 /* LaunchScreen.storyboard */; };
 		1F379920208838EE000F8F49 /* ScanTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F37991F208838EE000F8F49 /* ScanTableViewController.swift */; };
 		1F3799232088393E000F8F49 /* ScanDeviceDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3799222088393E000F8F49 /* ScanDeviceDataSource.swift */; };
-		CEC30D632093D7320051BEE8 /* ConnectedPeripheralTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC30D622093D7320051BEE8 /* ConnectedPeripheralTableViewController.swift */; };
+		CEC261852096B5B2005210E4 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC261842096B5B2005210E4 /* MainViewController.swift */; };
+		CEC261872096C571005210E4 /* ScanDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC261862096C571005210E4 /* ScanDataSource.swift */; };
 		CEC30D662093D8320051BEE8 /* ConnectedPeripheralDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC30D652093D8320051BEE8 /* ConnectedPeripheralDataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1F37990620883778000F8F49 /* SimpleBle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleBle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F37990920883778000F8F49 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		1F37990B20883778000F8F49 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		1F37990E20883778000F8F49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1F37991120883778000F8F49 /* SimpleBle.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SimpleBle.xcdatamodel; sourceTree = "<group>"; };
 		1F37991320883778000F8F49 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -30,6 +29,8 @@
 		1F37991820883778000F8F49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F37991F208838EE000F8F49 /* ScanTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanTableViewController.swift; sourceTree = "<group>"; };
 		1F3799222088393E000F8F49 /* ScanDeviceDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanDeviceDataSource.swift; sourceTree = "<group>"; };
+		CEC261842096B5B2005210E4 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		CEC261862096C571005210E4 /* ScanDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanDataSource.swift; sourceTree = "<group>"; };
 		CEC30D622093D7320051BEE8 /* ConnectedPeripheralTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectedPeripheralTableViewController.swift; sourceTree = "<group>"; };
 		CEC30D652093D8320051BEE8 /* ConnectedPeripheralDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectedPeripheralDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -64,6 +65,7 @@
 		1F37990820883778000F8F49 /* SimpleBle */ = {
 			isa = PBXGroup;
 			children = (
+				CEC261492096ABA0005210E4 /* Ble */,
 				1F3799212088391C000F8F49 /* DataSource */,
 				1F37990920883778000F8F49 /* AppDelegate.swift */,
 				1F37991E208838C2000F8F49 /* storyboards */,
@@ -81,7 +83,7 @@
 			children = (
 				CEC30D622093D7320051BEE8 /* ConnectedPeripheralTableViewController.swift */,
 				1F37991F208838EE000F8F49 /* ScanTableViewController.swift */,
-				1F37990B20883778000F8F49 /* ViewController.swift */,
+				CEC261842096B5B2005210E4 /* MainViewController.swift */,
 			);
 			path = storyboards;
 			sourceTree = "<group>";
@@ -91,8 +93,16 @@
 			children = (
 				1F3799222088393E000F8F49 /* ScanDeviceDataSource.swift */,
 				CEC30D652093D8320051BEE8 /* ConnectedPeripheralDataSource.swift */,
+				CEC261862096C571005210E4 /* ScanDataSource.swift */,
 			);
 			path = DataSource;
+			sourceTree = "<group>";
+		};
+		CEC261492096ABA0005210E4 /* Ble */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Ble;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -170,10 +180,10 @@
 				1F379920208838EE000F8F49 /* ScanTableViewController.swift in Sources */,
 				1F37991220883778000F8F49 /* SimpleBle.xcdatamodeld in Sources */,
 				1F3799232088393E000F8F49 /* ScanDeviceDataSource.swift in Sources */,
+				CEC261872096C571005210E4 /* ScanDataSource.swift in Sources */,
 				CEC30D662093D8320051BEE8 /* ConnectedPeripheralDataSource.swift in Sources */,
-				1F37990C20883778000F8F49 /* ViewController.swift in Sources */,
 				1F37990A20883778000F8F49 /* AppDelegate.swift in Sources */,
-				CEC30D632093D7320051BEE8 /* ConnectedPeripheralTableViewController.swift in Sources */,
+				CEC261852096B5B2005210E4 /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

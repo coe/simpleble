@@ -63,9 +63,10 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     
     // MARK: - CBCentralManagerDelegate
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        print(#file,#function,#line)
+
         switch central.state {
         case .poweredOn:
-            centralManager.scanForPeripherals(withServices: [longDataServiceUuid], options: nil)
             break
             
         case .unknown:
@@ -83,11 +84,15 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber)
     {
+        print(#file,#function,#line)
+
         scanDataSource.append(peripheral)
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral)
     {
+        print(#file,#function,#line)
+
         connectedPeripheral = peripheral
         peripheral.delegate = self
         peripheral.discoverServices([longDataServiceUuid])
@@ -269,6 +274,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
                 let viewController:ScanTableViewController = segue.destination as! ScanTableViewController
                 viewController.scanDataSource = scanDataSource
                 viewController.longDataServiceUuid = longDataServiceUuid
+                viewController.centralManager = centralManager
                 break
             case "showImage":
                 let viewcontroller:ReceiveImageViewController = segue.destination as! ReceiveImageViewController

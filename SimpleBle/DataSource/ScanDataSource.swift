@@ -40,7 +40,7 @@ extension ScanDataSource : UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ConnectedPeripheralCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ScanDeviceDataSourceCell", for: indexPath)
         let peripheral = scannedPeripheral[indexPath.row]
         
         cell.textLabel?.text = peripheral.name

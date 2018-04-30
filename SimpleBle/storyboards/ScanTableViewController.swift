@@ -7,13 +7,13 @@
 //
 
 import UIKit
-import CoreData
 import CoreBluetooth
 
-/// スキャンの結果を表示する
-/// この画面が終了したらスキャンは消滅させる
-///
-class ScanTableViewController: UITableViewController,NSFetchedResultsControllerDelegate {
+class ScanTableViewController: UITableViewController,ScanDataSourceDelegate {
+    func scanDataSourceDidChange(_ dataSource: ScanDataSource) {
+        tableView.reloadData()
+    }
+    
 
     var scanDataSource:ScanDataSource!
 
@@ -27,25 +27,15 @@ class ScanTableViewController: UITableViewController,NSFetchedResultsControllerD
             return _selectedScannedPeripheral
         }
     }
-    var managedObjectContext:NSManagedObjectContext!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        scanDataSource.delegate = self
         centralManager.scanForPeripherals(withServices: [longDataServiceUuid], options: nil)
     }
     
     deinit {
         centralManager.stopScan()
-        let request = NSFetchRequest<NSManagedObject>(entityName: "ScannedPeripheral")
-        do {
-            let ret = try managedObjectContext.fetch(request)
-            ret.forEach { (movie) in
-                managedObjectContext.delete(movie)
-            }
-            try managedObjectContext.save()
-        } catch {
-            print(#file,#function,#line,"error:\(error)")
-        }
         
     }
 
@@ -71,9 +61,6 @@ class ScanTableViewController: UITableViewController,NSFetchedResultsControllerD
         performSegue(withIdentifier: "backToConnection", sender: self)
     }
 
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?){
-        tableView.reloadData()
-    }
 
     /*
     // Override to support conditional editing of the table view.

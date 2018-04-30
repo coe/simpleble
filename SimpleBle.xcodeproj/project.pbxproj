@@ -17,6 +17,7 @@
 		CEC261852096B5B2005210E4 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC261842096B5B2005210E4 /* MainViewController.swift */; };
 		CEC261872096C571005210E4 /* ScanDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC261862096C571005210E4 /* ScanDataSource.swift */; };
 		CEC30D662093D8320051BEE8 /* ConnectedPeripheralDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC30D652093D8320051BEE8 /* ConnectedPeripheralDataSource.swift */; };
+		CEF15FC92097D090006F4DBD /* ReceiveImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF15FC82097D090006F4DBD /* ReceiveImageViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		CEC261862096C571005210E4 /* ScanDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanDataSource.swift; sourceTree = "<group>"; };
 		CEC30D622093D7320051BEE8 /* ConnectedPeripheralTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectedPeripheralTableViewController.swift; sourceTree = "<group>"; };
 		CEC30D652093D8320051BEE8 /* ConnectedPeripheralDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectedPeripheralDataSource.swift; sourceTree = "<group>"; };
+		CEF15FC82097D090006F4DBD /* ReceiveImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveImageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +86,7 @@
 				CEC30D622093D7320051BEE8 /* ConnectedPeripheralTableViewController.swift */,
 				1F37991F208838EE000F8F49 /* ScanTableViewController.swift */,
 				CEC261842096B5B2005210E4 /* MainViewController.swift */,
+				CEF15FC82097D090006F4DBD /* ReceiveImageViewController.swift */,
 			);
 			path = storyboards;
 			sourceTree = "<group>";
@@ -177,6 +180,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEF15FC92097D090006F4DBD /* ReceiveImageViewController.swift in Sources */,
 				1F379920208838EE000F8F49 /* ScanTableViewController.swift in Sources */,
 				1F37991220883778000F8F49 /* SimpleBle.xcdatamodeld in Sources */,
 				1F3799232088393E000F8F49 /* ScanDeviceDataSource.swift in Sources */,

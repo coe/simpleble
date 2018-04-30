@@ -9,9 +9,14 @@
 import UIKit
 import CoreBluetooth
 
-/// メインコントローラ
-/// 全てのBleはここでもつ
-
+/**
+ * 画面起動時にBLEの準備を行う>OK
+ * 画面起動時にPeripheralとしてのアドバタイズを行う > OK
+ * スキャン画面に移行する機能をもつ > OK
+ * カメラボタンで画像を取得する > OK
+ * 送信ボタンを押したら画像を送信する > OK
+ * Centralからデータを受信した、画像を表示する > OK
+ */
 class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheralManagerDelegate,CBPeripheralDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
     
     var scanDataSource:ScanDataSource!
@@ -24,6 +29,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     
     let longDataServiceUuid = CBUUID(string: "D096F3C2-5148-410A-BA6A-20FEAD00D7CA")
     let longDataWriteCharacteristicUuid = CBUUID(string: "D096F3C2-5148-410A-BA6A-20FEAD00D7CA")
+    let longDataWriteLengthDescriptorUuid = CBUUID(string: "C4BDAB8A-BAC1-477A-925C-E1665553953C")
 
     @IBOutlet weak var scanButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
@@ -44,6 +50,16 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     }
     
     private var connectedPeripheralWriteCharacteristic:CBCharacteristic?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Do any additional setup after loading the view.
+        centralManager = CBCentralManager(delegate: self, queue: nil)
+        peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
+        scanDataSource = ScanDataSource()
+        
+    }
     
     // MARK: - CBCentralManagerDelegate
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -108,16 +124,43 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         }
     }
     
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        centralManager = CBCentralManager(delegate: self, queue: nil)
-        peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
-        scanDataSource = ScanDataSource()
+    
+    private var receiverdData:Data = Data()
+    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest])
+    {
+        requests.forEach { (request) in
+            switch request.characteristic.uuid {
+            case longDataWriteCharacteristicUuid:
+                receiverdData.append(request.value!)
+                request.characteristic.descriptors?.forEach({ (descriptor) in
+                    switch descriptor.uuid {
+                    case longDataWriteLengthDescriptorUuid:
+                        let length:Int = descriptor.value as! Int
+                        if length == receiverdData.count {
+                            //データが揃った
+                            let image:UIImage = UIImage(data: receiverdData)!
+                            self.performSegue(withIdentifier: "showImage", sender: image)
+                            receiverdData = Data()
+                        }
+                        break
+                    default:
+                        break
+                    }
+                })
+                peripheral.respond(to: request, withResult: CBATTError.Code.success)
+                
+                break
+            default:
+                peripheral.respond(to: request, withResult: CBATTError.Code.attributeNotFound)
+                break
+            }
+            
+        }
+        
         
     }
+
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -226,6 +269,10 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
                 let viewController:ScanTableViewController = segue.destination as! ScanTableViewController
                 viewController.scanDataSource = scanDataSource
                 viewController.longDataServiceUuid = longDataServiceUuid
+                break
+            case "showImage":
+                let viewcontroller:ReceiveImageViewController = segue.destination as! ReceiveImageViewController
+                viewcontroller.imageView.image = sender as? UIImage
                 break
             default:
                 break

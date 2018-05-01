@@ -19,17 +19,14 @@ import CoreBluetooth
  */
 class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheralManagerDelegate,CBPeripheralDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
     
-    var scanDataSource:ScanDataSource!
-    var centralManager:CBCentralManager!
-    var peripheralManager:CBPeripheralManager!
-    
-//    let SERVICE_UUID = "D096F3C2-5148-410A-BA6A-20FEAD00D7CA"
-//    let BIGDATA_WRITE_CHARACTERISTIC_UUID = "42184378-A26D-474B-82CA-43C03AA7A701"
-//    let BIGDATA_LENGTH_CHARACTERISTIC_UUID = "62A9572E-3C99-4149-AFED-ED4C5CFD0242"
     
     let longDataServiceUuid = CBUUID(string: "D096F3C2-5148-410A-BA6A-20FEAD00D7CA")
     let longDataWriteCharacteristicUuid = CBUUID(string: "D096F3C2-5148-410A-BA6A-20FEAD00D7CA")
     let longDataWriteLengthDescriptorUuid = CBUUID(string: "C4BDAB8A-BAC1-477A-925C-E1665553953C")
+    
+    var scanDataSource:ScanDataSource!
+    var centralManager:CBCentralManager!
+    var peripheralManager:CBPeripheralManager!
 
     @IBOutlet weak var scanButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
@@ -68,7 +65,6 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         switch central.state {
         case .poweredOn:
             break
-            
         case .unknown:
             break
         case .resetting:
@@ -92,6 +88,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral)
     {
         print(#file,#function,#line)
+        
 
         connectedPeripheral = peripheral
         peripheral.delegate = self
@@ -193,22 +190,21 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
             return
         }
         let data = UIImagePNGRepresentation(imageView.image!)
-        sendBytes(data: data!, peripheral: connectedPeripheral!, writeCharacteristic: connectedPeripheralWriteCharacteristic!)
+        sendBytes(data: data!, peripheral: connectedPeripheral!, writeCharacteristic: connectedPeripheralWriteCharacteristic!,mtu:peripheral.maximumWriteValueLength(for: .withoutResponse))
     }
     
     private var datas:ArraySlice<Data> = ArraySlice()
-    private func sendBytes(data:Data,peripheral:CBPeripheral,writeCharacteristic:CBCharacteristic){
+    private func sendBytes(data:Data,peripheral:CBPeripheral,writeCharacteristic:CBCharacteristic,mtu:Int){
         //データを分割して配列に突っ込む
-        var mMtu = 512
         var maxsize = data.count
         var offset = 0
-        while (maxsize > mMtu) {
-            var subdata = data.subdata(in: offset..<offset+mMtu)
+        while (maxsize > mtu) {
+            var subdata = data.subdata(in: offset..<offset+mtu)
 //            val arr = it.sliceArray(offset..offset+mMtu-1)
             datas.append(subdata)
 //            sendingBytesList.add(arr)
-            offset += mMtu
-            maxsize -= mMtu
+            offset += mtu
+            maxsize -= mtu
         }
         var subdata = data.subdata(in: offset..<data.count)
         datas.append(subdata)

@@ -28,8 +28,8 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     var centralManager:CBCentralManager!
     var peripheralManager:CBPeripheralManager!
 
-    @IBOutlet weak var scanButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var connectLabel: UILabel!
     
     private var _connectedPeripheral:CBPeripheral?
     private var connectedPeripheral:CBPeripheral? {
@@ -39,9 +39,9 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         set {
             _connectedPeripheral = newValue
             if newValue != nil {
-                scanButton.title = _connectedPeripheral!.name
+                connectLabel.text = newValue!.name
             } else {
-                scanButton.title = "Scan"
+                connectLabel.text = "No Connect"
             }
         }
     }

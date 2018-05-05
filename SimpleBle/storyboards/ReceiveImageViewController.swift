@@ -9,12 +9,15 @@
 import UIKit
 
 class ReceiveImageViewController: UIViewController {
+    
+    var image:UIImage!
 
     @IBOutlet weak var imageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        imageView.image = image
     }
 
     override func didReceiveMemoryWarning() {

@@ -22,7 +22,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     
     let longDataServiceUuid = CBUUID(string: "D096F3C2-5148-410A-BA6A-20FEAD00D7CA")
     let longDataWriteCharacteristicUuid = CBUUID(string: "E053BD84-1E5B-4A6C-AD49-C672A737880C")
-    let longDataWriteLengthDescriptorUuid = CBUUID(string: "C4BDAB8A-BAC1-477A-925C-E1665553953C")
+    let longDataWriteLengthCharacteristicUuid = CBUUID(string: "C4BDAB8A-BAC1-477A-925C-E1665553953C")
     
     var scanDataSource:ScanDataSource!
     var centralManager:CBCentralManager!
@@ -123,16 +123,17 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         case .poweredOn:
             //サービス、キャラクタリスティック追加はpoweredOnの後
             let service:CBMutableService = CBMutableService(type: longDataServiceUuid, primary: true)
-            var characteristicsArray:[CBCharacteristic] = []
             let characteristic = CBMutableCharacteristic(type: longDataWriteCharacteristicUuid, properties: .writeWithoutResponse, value: nil, permissions: .writeable)
             
-            characteristicsArray.append(characteristic)
-            service.characteristics = characteristicsArray
+            //長さ取得用キャラクタリスティック
+            let lengthCharacteristic = CBMutableCharacteristic(type: longDataWriteLengthCharacteristicUuid, properties: CBCharacteristicProperties.write, value: nil, permissions: CBAttributePermissions.writeable)
+            
+            service.characteristics = [characteristic,lengthCharacteristic]
             peripheralManager.add(service)
             
             //アドバタイジング開始
             let option:[String : Any] = [
-                CBAdvertisementDataServiceUUIDsKey:[longDataServiceUuid]
+                CBAdvertisementDataServiceUUIDsKey:[longDataServiceUuid,longDataWriteLengthCharacteristicUuid]
             ]
             peripheralManager.startAdvertising(option)
             break
@@ -308,28 +309,27 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     
     
     private var receiverdData:Data = Data()
+    private var tmpLength = 0
     func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest])
     {
         print(#file,#function,#line)
         requests.forEach { (request) in
+            print(#file,#function,#line,"uuid:\(request.characteristic.uuid)")
             switch request.characteristic.uuid {
+            case longDataWriteLengthCharacteristicUuid:
+                let length:Int = request.value!.withUnsafeBytes { $0.pointee }
+                print(#file,#function,#line,"request.value length:\(length)")
+                tmpLength = length
+                peripheral.respond(to: request, withResult: CBATTError.Code.success)
+                break
             case longDataWriteCharacteristicUuid:
+                print(#file,#function,#line,"request.value size:\(request.value?.count)")
+
                 receiverdData.append(request.value!)
-                request.characteristic.descriptors?.forEach({ (descriptor) in
-                    switch descriptor.uuid {
-                    case longDataWriteLengthDescriptorUuid:
-                        let length:Int = descriptor.value as! Int
-                        if length == receiverdData.count {
-                            //データが揃った
-                            let image:UIImage = UIImage(data: receiverdData)!
-                            self.performSegue(withIdentifier: "showImage", sender: image)
-                            receiverdData = Data()
-                        }
-                        break
-                    default:
-                        break
-                    }
-                })
+                if tmpLength == receiverdData.count {
+                    let image = UIImage(data: receiverdData)
+                    performSegue(withIdentifier: "showImage", sender: image)
+                }
                 peripheral.respond(to: request, withResult: CBATTError.Code.success)
                 
                 break
@@ -455,7 +455,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
                 break
             case "showImage":
                 let viewcontroller:ReceiveImageViewController = segue.destination as! ReceiveImageViewController
-                viewcontroller.imageView.image = sender as? UIImage
+                viewcontroller.image = sender as! UIImage
                 break
             default:
                 break

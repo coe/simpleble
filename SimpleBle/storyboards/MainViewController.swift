@@ -105,15 +105,38 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         print(#file,#function,#line)
         peripheral.services?.forEach({ (service) in
             print(#file,#function,#line,"service.uuid:\(service.uuid)")
-            print(#file,#function,#line,"characteristics:\(service.characteristics?.count)")
-
-            service.characteristics?.forEach({ (characteristic) in
-                print(#file,#function,#line,"characteristic.uuid:\(characteristic.uuid)")
-                if characteristic.uuid == longDataWriteCharacteristicUuid {
-                    connectedPeripheralWriteCharacteristic = characteristic
-                }
-            })
+            switch service.uuid {
+            case longDataServiceUuid:
+                peripheral.discoverCharacteristics([longDataWriteCharacteristicUuid,longDataWriteLengthCharacteristicUuid], for: service)
+                break
+            default:
+                break
+            }
         })
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?)
+    {
+        print(#file,#function,#line,"didDiscoverCharacteristicsFor:\(service.characteristics?.count)")
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?)
+    {
+        print(#file,#function,#line)
+        if datas.count == 0 {
+            print(#file,#function,#line,"終了")
+        } else {
+            let writeCharacteristic = connectedPeripheral?.services?.first(where: { (service) -> Bool in
+                return service.uuid == longDataServiceUuid
+            })?.characteristics?.first(where: { (characteristic) -> Bool in
+                return characteristic.uuid == longDataWriteCharacteristicUuid
+            })
+            let popdata = datas.popFirst()!
+            print(#file,#function,#line,"popdata:\(popdata.count)")
+
+            peripheral.writeValue(popdata, for: writeCharacteristic!, type: CBCharacteristicWriteType.withResponse)
+        }
+
     }
     
     
@@ -339,11 +362,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
             }
             
         }
-        
-        
     }
-
-
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -371,7 +390,36 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
             return
         }
         let data = UIImagePNGRepresentation(imageView.image!)!
-        sendBytes(data: data, peripheral: peripheral, writeCharacteristic: connectedPeripheralWriteCharacteristic!,mtu:peripheral.maximumWriteValueLength(for: .withoutResponse))
+        //画像を分割
+        let mtu = peripheral.maximumWriteValueLength(for: .withResponse)
+        print(#file,#function,#line,"端末限界mtu:\(mtu)")
+
+        var maxsize = data.count
+        print(#file,#function,#line,"maxsize:\(maxsize)")
+
+        var offset = 0
+        while (maxsize > mtu) {
+            var subdata = data.subdata(in: offset..<offset+mtu)
+            //            val arr = it.sliceArray(offset..offset+mMtu-1)
+            datas.append(subdata)
+            //            sendingBytesList.add(arr)
+            offset += mtu
+            maxsize -= mtu
+        }
+        var subdata = data.subdata(in: offset..<data.count)
+        datas.append(subdata)
+        
+        //初回はデータサイズ長を書き込む
+        let writeCharacteristic = connectedPeripheral?.services?.first(where: { (service) -> Bool in
+            return service.uuid == longDataServiceUuid
+        })?.characteristics?.first(where: { (characteristic) -> Bool in
+            return characteristic.uuid == longDataWriteLengthCharacteristicUuid
+        })
+        var dataSize = data.count
+        let dataSizeByte = Data(bytes: &dataSize, count: MemoryLayout.size(ofValue: dataSize))
+        
+        peripheral.writeValue(dataSizeByte, for: writeCharacteristic!, type: CBCharacteristicWriteType.withResponse)
+        
     }
     
     private var datas:ArraySlice<Data> = ArraySlice()

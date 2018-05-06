@@ -55,7 +55,17 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         centralManager = CBCentralManager(delegate: self, queue: nil)
         peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
         scanDataSource = ScanDataSource()
-        
+        let endian = UInt32(CFByteOrderGetCurrent())
+        switch endian {
+        case CFByteOrderUnknown.rawValue:
+            print("endian:CFByteOrderUnknow")
+        case CFByteOrderLittleEndian.rawValue:
+            print("endian:CFByteOrderLittleEndian")
+        case CFByteOrderBigEndian.rawValue:
+            print("endian:CFByteOrderBigEndian")
+        default:
+            break
+        }
 
     }
     
@@ -416,6 +426,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
             return characteristic.uuid == longDataWriteLengthCharacteristicUuid
         })
         var dataSize = Int64(data.count)
+        print("endian:\(CFByteOrderGetCurrent())")
         let dataSizeByte = Data(bytes: &dataSize, count: MemoryLayout.size(ofValue: dataSize))
         print(#file,#function,#line,"dataSize:\(dataSize)")
         print(#file,#function,#line,"dataSizeByte:\(dataSizeByte)")

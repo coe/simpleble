@@ -391,7 +391,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         }
         let data = UIImageJPEGRepresentation(imageView.image!, 0.3)!
         //画像を分割
-        let mtu = peripheral.maximumWriteValueLength(for: .withResponse)
+        let mtu = 180//peripheral.maximumWriteValueLength(for: .withResponse)
         
         print(#file,#function,#line,"端末限界mtu:\(mtu)")
 

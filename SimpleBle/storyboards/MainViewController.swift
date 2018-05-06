@@ -342,7 +342,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
             case longDataWriteLengthCharacteristicUuid:
                 let length:Int = request.value!.withUnsafeBytes { $0.pointee }
                 print(#file,#function,#line,"request.value length:\(length)")
-                tmpLength = length
+                tmpLength = Int(length)
                 peripheral.respond(to: request, withResult: CBATTError.Code.success)
                 break
             case longDataWriteCharacteristicUuid:
@@ -389,13 +389,13 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         guard let peripheral = self.connectedPeripheral else {
             return
         }
-        let data = UIImagePNGRepresentation(imageView.image!)!
+        let data = UIImageJPEGRepresentation(imageView.image!, 0.3)!
         //画像を分割
         let mtu = peripheral.maximumWriteValueLength(for: .withResponse)
+        
         print(#file,#function,#line,"端末限界mtu:\(mtu)")
 
         var maxsize = data.count
-        print(#file,#function,#line,"maxsize:\(maxsize)")
 
         var offset = 0
         while (maxsize > mtu) {
@@ -415,9 +415,15 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         })?.characteristics?.first(where: { (characteristic) -> Bool in
             return characteristic.uuid == longDataWriteLengthCharacteristicUuid
         })
-        var dataSize = data.count
+        var dataSize = Int64(data.count)
         let dataSizeByte = Data(bytes: &dataSize, count: MemoryLayout.size(ofValue: dataSize))
-        
+        print(#file,#function,#line,"dataSize:\(dataSize)")
+        print(#file,#function,#line,"dataSizeByte:\(dataSizeByte)")
+        let hexStr = dataSizeByte.map {
+            String(format: "%.2hhx", $0)
+            }.joined()
+        print(#file,#function,#line,"hexStr:\(hexStr)")
+
         peripheral.writeValue(dataSizeByte, for: writeCharacteristic!, type: CBCharacteristicWriteType.withResponse)
         
     }

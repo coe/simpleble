@@ -426,7 +426,6 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
             return characteristic.uuid == longDataWriteLengthCharacteristicUuid
         })
         var dataSize = Int64(data.count)
-        print("endian:\(CFByteOrderGetCurrent())")
         let dataSizeByte = Data(bytes: &dataSize, count: MemoryLayout.size(ofValue: dataSize))
         print(#file,#function,#line,"dataSize:\(dataSize)")
         print(#file,#function,#line,"dataSizeByte:\(dataSizeByte)")

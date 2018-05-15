@@ -125,11 +125,6 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
         })
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?)
-    {
-        print(#file,#function,#line,"didDiscoverCharacteristicsFor:\(service.characteristics?.count)")
-    }
-    
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?)
     {
         print(#file,#function,#line)

@@ -75,20 +75,25 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     
     // MARK: - CBCentralManagerDelegate
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        print(#file,#function,#line)
 
         switch central.state {
         case .poweredOn:
+            print(#file,#function,#line,"central.state:poweredOn")
             break
         case .unknown:
+            print(#file,#function,#line,"central.state:unknown")
             break
         case .resetting:
+            print(#file,#function,#line,"central.state:resetting")
             break
         case .unsupported:
+            print(#file,#function,#line,"central.state:unsupported")
             break
         case .unauthorized:
+            print(#file,#function,#line,"central.state:unauthorized")
             break
         case .poweredOff:
+            print(#file,#function,#line,"\(Date()) central.state:poweredOff")
             break
         }
     }
@@ -128,6 +133,7 @@ class MainViewController: UIViewController,CBCentralManagerDelegate,CBPeripheral
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?)
     {
         print(#file,#function,#line)
+        
         if datas.count == 0 {
             print(#file,#function,#line,"終了")
         } else {
